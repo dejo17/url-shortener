@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UrlShortener.Domain;
 
 namespace UrlShortener.Controllers
 {
@@ -10,6 +11,12 @@ namespace UrlShortener.Controllers
     [Route("[controller]")] //placeholder se automatski zamjenjuje sa imenom controllera bez suffixa, u ovom slucaju: /account
     public class AccountController : ControllerBase //controlleri nasljeduju od bazne klase ControllerBase
     {
+        private readonly UrlShortenerContext _context;
+
+        public AccountController(UrlShortenerContext context) {
+            _context = context;
+        }
+
         private static List<AccountRequestBody> accounts = new List<AccountRequestBody>();
         [HttpPost]
         public ActionResult<AccountResponseBody> GetAccount([FromBody]AccountRequestBody accountModel)
@@ -24,7 +31,7 @@ namespace UrlShortener.Controllers
             else
             {
                 AccountResponseBody accountResponse = new AccountResponseBody();
-
+                
                 if (accounts.Contains(accountModel))
                 {
                     accountResponse.success = false;
