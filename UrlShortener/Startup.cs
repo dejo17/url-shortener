@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Domain;
+using UrlShortener.Middleware;
 
 namespace UrlShortener
 {
@@ -21,7 +22,8 @@ namespace UrlShortener
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<UrlShortenerContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //options.UseSqlServer(Configuration.GetConnectionString("UrlShortenerContext")));
+            options.UseInMemoryDatabase("UrlShortenerContext"));
             services.AddControllers();
         }
 
@@ -38,7 +40,7 @@ namespace UrlShortener
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseMiddleware<BasicAuthMiddleware>("test"); //TODO refactor string
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
