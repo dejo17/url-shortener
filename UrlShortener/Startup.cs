@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Domain;
 using UrlShortener.Middleware;
+using Microsoft.AspNetCore.Authentication;
+using WebApi.Helpers;
+using UrlShortener.Services;
 
 namespace UrlShortener
 {
@@ -24,6 +27,13 @@ namespace UrlShortener
             services.AddDbContext<UrlShortenerContext>(options =>
             //options.UseSqlServer(Configuration.GetConnectionString("UrlShortenerContext")));
             options.UseInMemoryDatabase("UrlShortenerContext"));
+
+            // configure basic authentication 
+            services.AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+            // configure DI for application services
+            services.AddScoped<IAccountService, AccountService>();
             services.AddControllers();
         }
 
@@ -39,8 +49,9 @@ namespace UrlShortener
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-            app.UseMiddleware<BasicAuthMiddleware>("test"); //TODO refactor string
+            //app.UseMiddleware<BasicAuthMiddleware>("test"); //TODO refactor string
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
