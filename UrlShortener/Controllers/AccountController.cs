@@ -38,7 +38,7 @@ namespace UrlShortener.Controllers
             {
 
                 AccountResponseBody accountResponse = new AccountResponseBody();
-                Account account = _context.Accounts.FirstOrDefault(account => account.AccountID == accountModel.AccountId);
+                Account account = _context.Accounts.Find(accountModel.AccountId);
                 
                 if (account != null)
                 {
