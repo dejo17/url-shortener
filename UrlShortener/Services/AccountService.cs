@@ -24,16 +24,16 @@ namespace UrlShortener.Services
 
         public async Task<Account> Authenticate(string AccountID, string password)
         {
-            Console.WriteLine("About to authenticate account");
+            //Console.WriteLine("About to authenticate account");
             Account accountToAuthenticate = await _context.Accounts.FindAsync(AccountID);
             if (accountToAuthenticate == null)
             {
-                Console.WriteLine("Account not found");
+                //Console.WriteLine("Account not found");
                 return null; //varacamo null ako account ne postoji
             }
             else {
                 //ako je user pronaden, provjeravamo password
-                Console.WriteLine("Account found, checking password");
+                //Console.WriteLine("Account found, checking password");
                 return (accountToAuthenticate.Password.Equals(password, StringComparison.Ordinal)) ? accountToAuthenticate : null;
             }
         }
@@ -43,17 +43,17 @@ namespace UrlShortener.Services
          */
         public async Task<Account> GetAccount(string AccountID)
         {
-            Console.WriteLine($"Searching for AccountID {AccountID}");
+            //Console.WriteLine($"Searching for AccountID {AccountID}");
             Account accountFound = await _context.Accounts.FindAsync(AccountID);
             if (accountFound == null)
             {
-                Console.WriteLine("Account not found");
+                //Console.WriteLine("Account not found");
                 return null; //varacamo null ako account ne postoji
             }
             else
             {
                 //ako je user pronaden, provjeravamo password
-                Console.WriteLine("Account found");
+                //Console.WriteLine("Account found");
                 return accountFound;
             }
         }

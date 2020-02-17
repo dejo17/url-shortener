@@ -7,6 +7,7 @@ namespace UrlShortener
     {
         [Required]
         [StringLength(50)]
+        [MinLength(5)]
         public string AccountId { get; set; }
 
         /*

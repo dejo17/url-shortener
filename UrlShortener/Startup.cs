@@ -6,8 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Domain;
 using Microsoft.AspNetCore.Authentication;
-using WebApi.Helpers;
 using UrlShortener.Services;
+using UrlShortener.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace UrlShortener
 {
@@ -24,15 +25,17 @@ namespace UrlShortener
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<UrlShortenerContext>(options =>
-            //options.UseSqlServer(Configuration.GetConnectionString("UrlShortenerContext")));
-            options.UseInMemoryDatabase("UrlShortenerContext"));
+            options.UseSqlServer(Configuration.GetConnectionString("UrlShortenerContext")));
+            //options.UseInMemoryDatabase("UrlShortenerContext"));
 
             // configure basic authentication 
             services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); //sluzi da mozemo pristupiti trenutnom useru
             // configure DI for application services
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUrlService, UrlService>();
+            services.AddScoped<IStatisticService, StatisticService>();
             services.AddControllers();
         }
 
