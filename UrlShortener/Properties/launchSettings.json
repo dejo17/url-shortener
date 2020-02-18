@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "help",
+      "launchUrl": "help.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "UrlShortener": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "help",
+      "launchUrl": "help.html",
       "applicationUrl": "https://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

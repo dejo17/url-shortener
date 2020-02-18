@@ -16,11 +16,11 @@ namespace UrlShortener.Controllers
     [ApiController]
     public class StatisticController : ControllerBase
     {
-        private readonly IStatisticService _statisticService;
+        private readonly IUrlService _urlService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public StatisticController(IStatisticService statisticService, IHttpContextAccessor httpContextAccessor) { 
+        public StatisticController(IUrlService urlService, IHttpContextAccessor httpContextAccessor) { 
         
-            _statisticService = statisticService;
+            _urlService = urlService;
             _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet("{AccountID}")]
@@ -29,7 +29,7 @@ namespace UrlShortener.Controllers
             {
                 var account = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 if (AccountID.Equals(account, StringComparison.Ordinal)) {
-                    return Ok(_statisticService.GetStatistic(AccountID));
+                    return Ok(_urlService.GetUrlStatistic(AccountID));
                 }
                 else {
                     return Unauthorized("AccountID's from Authorization header and URI path dont match. You are only allowed to see your own statistic");

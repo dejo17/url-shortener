@@ -35,7 +35,6 @@ namespace UrlShortener
             // configure DI for application services
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IUrlService, UrlService>();
-            services.AddScoped<IStatisticService, StatisticService>();
             services.AddControllers();
         }
 
@@ -46,7 +45,7 @@ namespace UrlShortener
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseRouting();

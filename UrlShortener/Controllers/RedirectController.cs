@@ -36,10 +36,12 @@ namespace UrlShortener.Controllers
                     {
                         if (RegisteredUrl.RedirectType == 301)
                         {
+                            _urlService.IncrementStatistic(RegisteredUrl.RegisteredUrlID);
                             return RedirectPermanent(RegisteredUrl.LongUrl);
                         }
                         else if (RegisteredUrl.RedirectType == 302)
                         {
+                            _urlService.IncrementStatistic(RegisteredUrl.RegisteredUrlID);
                             return Redirect(RegisteredUrl.LongUrl);
                         }
                     }

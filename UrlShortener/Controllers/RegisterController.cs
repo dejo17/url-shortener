@@ -1,14 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using UrlShortener.Api.Model;
-using UrlShortener.Authentication;
-using UrlShortener.Domain;
 using UrlShortener.Domain.Models;
 using UrlShortener.Services;
 
@@ -31,7 +25,6 @@ namespace UrlShortener.Controllers
 
             var account = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            RegisterUrlResponseBody response = new RegisterUrlResponseBody();
             if (!ModelState.IsValid) 
             {
                 return BadRequest();
@@ -41,6 +34,7 @@ namespace UrlShortener.Controllers
             }
 
             RegisteredUrl registeredUrl = _urlService.CreateRegisteredUrl(request, account);
+            RegisterUrlResponseBody response = new RegisterUrlResponseBody();
             response.shortUrl = registeredUrl.ShortUrl;            
             return Ok(response);
         
