@@ -13,10 +13,10 @@ namespace UrlShortener.Controllers
     [Authorize]
     public class RegisterController : ControllerBase
     {
-        private readonly IUrlService _urlService;
+        private readonly IShortenerService _urlService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RegisterController(IUrlService urlService, IHttpContextAccessor httpContextAccessor) {
+        public RegisterController(IShortenerService urlService, IHttpContextAccessor httpContextAccessor) {
             _urlService = urlService;
             _httpContextAccessor = httpContextAccessor;
         }

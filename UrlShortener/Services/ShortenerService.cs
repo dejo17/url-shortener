@@ -2,25 +2,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using UrlShortener.Domain;
 using UrlShortener.Domain.Models;
 
 namespace UrlShortener.Services
 {
 
-    public interface IUrlService
+    public interface IShortenerService
     {
-        RegisteredUrl GetRegisteredUrl(string Url, string account);
+        RegisteredUrl GetRegisteredUrl(string ShortUrl);
         RegisteredUrl CreateRegisteredUrl(RegisterUrlRequestBody request, string account);
         Dictionary<string, string> GetUrlStatistic(string AccountID);
         void IncrementStatistic(long ID);
     }
-    public class UrlService : IUrlService
+    public class ShortenerService : IShortenerService
     {
 
         private readonly UrlShortenerContext _context;
 
-        public UrlService(UrlShortenerContext context) {
+        public ShortenerService(UrlShortenerContext context)
+        {
             _context = context;
         }
 
@@ -42,12 +44,13 @@ namespace UrlShortener.Services
             {
                 RegisteredUrl registeredUrl = new RegisteredUrl();
                 registeredUrl.LongUrl = request.url;
-                registeredUrl.ShortUrl = request.url.Substring(0, 10);
+                registeredUrl.ShortUrl = ShortUrlGenerator.Generate(10);
                 if (request.redirectType > 0)
                 {
                     registeredUrl.RedirectType = request.redirectType;
                 }
-                else {
+                else
+                {
                     registeredUrl.RedirectType = 302;
                 }
                 registeredUrl.AccountID = account;
@@ -61,9 +64,9 @@ namespace UrlShortener.Services
          *  metoda vraca registrirani url objekt
          *  prima puni url i accoundID
          */
-        public RegisteredUrl GetRegisteredUrl(string Url, string AccountID)
+        public RegisteredUrl GetRegisteredUrl(string ShortUrl)
         {
-            RegisteredUrl findUrl = _context.RegisteredUrls.FirstOrDefault(databaseUrl => databaseUrl.ShortUrl == Url && databaseUrl.AccountID == AccountID);
+            RegisteredUrl findUrl = _context.RegisteredUrls.FirstOrDefault(databaseUrl => databaseUrl.ShortUrl == ShortUrl);
             return findUrl;
         }
 
@@ -87,9 +90,9 @@ namespace UrlShortener.Services
         }
 
         /**
-         *  metoda uvecava numberofCalls za 1. Prima ID registriranog URL objekta
+         *  metoda prima ID registriranog URL objekta i uvecava njegov numberOfCalls za 1, za potrebe statistike
          */
-        public void IncrementStatistic(long ID) 
+        public void IncrementStatistic(long ID)
         {
             RegisteredUrl findUrl = _context.RegisteredUrls.Find(ID);
             if (findUrl != null)
@@ -98,6 +101,34 @@ namespace UrlShortener.Services
                 _context.Entry(findUrl).State = EntityState.Modified;
                 _context.SaveChanges();
             }
+        }
+
+        /**
+         *  metoda generira short url 
+         */
+        public static class ShortUrlGenerator
+        {
+
+
+            public static string Generate(int length)
+            {
+                if (length < 1 || length > 128)
+                {
+                    throw new ArgumentException(nameof(length));
+                }
+                Random rand = new Random(Environment.TickCount);
+                List<char> chars = new List<char>();
+                string randomChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+                for (int i = 0; i < length; i++) {
+                    chars.Add(
+                    randomChars.ToCharArray()[rand.Next(0, randomChars.Length)]);
+                }
+
+                return new string(chars.ToArray());
+
+            }
+
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.Services;
@@ -12,51 +7,49 @@ namespace UrlShortener.Controllers
 {
     [Route("")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class RedirectController : ControllerBase
     {
-        private readonly IUrlService _urlService;
+        private readonly IShortenerService _urlService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public RedirectController(IUrlService urlService, IHttpContextAccessor httpContextAccessor)
+        public RedirectController(IShortenerService urlService, IHttpContextAccessor httpContextAccessor)
         {
             _urlService = urlService;
             _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("{ShortUrl}")]
+        [AllowAnonymous]
         public ActionResult RedirectToUrl(string ShortUrl)
         {
-            var account = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            if (account != null)
+
+            var RegisteredUrl = _urlService.GetRegisteredUrl(ShortUrl);
+            if (RegisteredUrl != null)
             {
-                var RegisteredUrl = _urlService.GetRegisteredUrl(ShortUrl, account);
-                if (RegisteredUrl != null)
+                if (RegisteredUrl.RedirectType > 0)
                 {
-                    if (RegisteredUrl.RedirectType > 0)
+                    if (RegisteredUrl.RedirectType == 301)
                     {
-                        if (RegisteredUrl.RedirectType == 301)
-                        {
-                            _urlService.IncrementStatistic(RegisteredUrl.RegisteredUrlID);
-                            return RedirectPermanent(RegisteredUrl.LongUrl);
-                        }
-                        else if (RegisteredUrl.RedirectType == 302)
-                        {
-                            _urlService.IncrementStatistic(RegisteredUrl.RegisteredUrlID);
-                            return Redirect(RegisteredUrl.LongUrl);
-                        }
+                        _urlService.IncrementStatistic(RegisteredUrl.RegisteredUrlID);
+                        return RedirectPermanent(RegisteredUrl.LongUrl);
                     }
-                    return Redirect(RegisteredUrl.LongUrl); //za svaki slucaj ako je redirectType = null ili 0
+                    else if (RegisteredUrl.RedirectType == 302)
+                    {
+                        _urlService.IncrementStatistic(RegisteredUrl.RegisteredUrlID);
+                        return Redirect(RegisteredUrl.LongUrl);
+                    }
                 }
-                return NotFound();
+                return Redirect(RegisteredUrl.LongUrl); //za svaki slucaj ako je redirectType = null ili 0
             }
-            if (!Response.Headers.ContainsKey("WWW-Authenticate"))
+            return NotFound();
+
+            /*if (!Response.Headers.ContainsKey("WWW-Authenticate"))
             {
                 Response.Headers.Add("WWW-Authenticate",
                     string.Format("Basic realm=\"{0}\"", "localhost"));
             }
-            return Unauthorized();
+            return Unauthorized();*/
 
-        }
-
+        }   
     }
 }

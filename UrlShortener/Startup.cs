@@ -34,7 +34,7 @@ namespace UrlShortener
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); //sluzi da mozemo pristupiti trenutnom useru
             // configure DI for application services
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IUrlService, UrlService>();
+            services.AddScoped<IShortenerService, ShortenerService>();
             services.AddControllers();
         }
 

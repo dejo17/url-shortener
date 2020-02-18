@@ -16,9 +16,9 @@ namespace UrlShortener.Controllers
     [ApiController]
     public class StatisticController : ControllerBase
     {
-        private readonly IUrlService _urlService;
+        private readonly IShortenerService _urlService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public StatisticController(IUrlService urlService, IHttpContextAccessor httpContextAccessor) { 
+        public StatisticController(IShortenerService urlService, IHttpContextAccessor httpContextAccessor) { 
         
             _urlService = urlService;
             _httpContextAccessor = httpContextAccessor;
