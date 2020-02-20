@@ -11,17 +11,18 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": false,
-      "launchUrl": "account",
+      "launchBrowser": true,
+      "launchUrl": "help",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "UrlShortener": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "launchUrl": "account",
-      "applicationUrl": "https://localhost:5000",
+      "launchBrowser": true,
+      "launchUrl": "help",
+      "applicationUrl": "http://localhost:5000",
+      "sslPort": 5001,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

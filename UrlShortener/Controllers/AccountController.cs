@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using UrlShortener.Domain;
 using UrlShortener.Domain.Models;
+using UrlShortener.Services;
 
 namespace UrlShortener.Controllers
 {
@@ -13,11 +14,11 @@ namespace UrlShortener.Controllers
                             //u ovom slucaju: /account. moguce je koristiti i custom path
     public class AccountController : ControllerBase //controlleri nasljeduju od bazne klase ControllerBase
     {
-        private readonly UrlShortenerContext _context;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UrlShortenerContext context)   //constructor, DI ubacuje DB context
+        public AccountController(IAccountService accountService)   //constructor, DI ubacuje DB context
         {
-            _context = context;
+            _accountService = accountService;
         }
 
         /**
@@ -37,24 +38,22 @@ namespace UrlShortener.Controllers
             if (ModelState.IsValid) 
             {
 
-                AccountResponseBody accountResponse = new AccountResponseBody();
-                Account account = _context.Accounts.Find(accountModel.AccountId);
-                
+                AccountResponseBody accountResponse = new AccountResponseBody(); //priprema responsea za popuniti
+
+                //trazimo da li account postoji da bi znali koji response poslati
+                Account account = _accountService.GetAccount(accountModel.AccountId).Result;                   
+
                 if (account != null)
                 {
+                    //account vec postoji, vracamo 409 conflict
                     accountResponse.success = false;
                     accountResponse.description = "Account exists";
                     return Conflict(accountResponse);
                 }
                 else
                 {
-                    //account ne postoji, kreiramo novi i spremamo u bazu:
-                    Account newAccount = new Account();
-                    newAccount.AccountID = accountModel.AccountId;
-                    newAccount.Password = "365dfbdr";    //TODO make random password generator
-                    _context.Accounts.Add(newAccount);
-                    int z = _context.SaveChanges();
-
+                    //account ne postoji, kreiramo novi
+                    Account newAccount = _accountService.CreateAccount(accountModel.AccountId).Result;
                     //popunjavamo response i vracamo status created:
                     accountResponse.success = true;
                     accountResponse.description = "Account created successfully";

@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using UrlShortener.Api.Model;
-using UrlShortener.Domain;
 using UrlShortener.Domain.Models;
+using UrlShortener.Services;
 
 namespace UrlShortener.Controllers
 {
@@ -15,28 +13,29 @@ namespace UrlShortener.Controllers
     [Authorize]
     public class RegisterController : ControllerBase
     {
-        private readonly UrlShortenerContext _context;
-        public RegisterController(UrlShortenerContext context) {
-            _context = context;
+        private readonly IShortenerService _urlService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public RegisterController(IShortenerService urlService, IHttpContextAccessor httpContextAccessor) {
+            _urlService = urlService;
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpPost]
-        public ActionResult<RegisterUrlResponseBody> registerUrl([FromBody]RegisterUrlRequestBody request) {
+        public ActionResult<RegisterUrlResponseBody> registerUrlAsync([FromBody]RegisterUrlRequestBody request) {
 
-            RegisterUrlResponseBody response = new RegisterUrlResponseBody();
-            if (request.url == null)
+            var account = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if (!ModelState.IsValid) 
             {
                 return BadRequest();
             }
-            else {
-                RegisteredUrl registeredUrl = new RegisteredUrl();
-                registeredUrl.LongUrl = request.url;
-                registeredUrl.ShortUrl = request.url.Substring(0, 10);
-                registeredUrl.RedirectType = request.redirectType;
-                response.shortUrl = registeredUrl.ShortUrl;
-                _context.RegisteredUrls.Add(registeredUrl);
-                _context.SaveChanges();
-
+            if (account == null) {
+                return Unauthorized();
             }
+
+            RegisteredUrl registeredUrl = _urlService.CreateRegisteredUrl(request, account);
+            RegisterUrlResponseBody response = new RegisterUrlResponseBody();
+            response.shortUrl = registeredUrl.ShortUrl;            
             return Ok(response);
         
         }

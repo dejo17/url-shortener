@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using UrlShortener.Domain.Models;
 using UrlShortener.Services;
 
-namespace WebApi.Helpers
+namespace UrlShortener.Authentication
 {
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -21,18 +21,18 @@ namespace WebApi.Helpers
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            IAccountService userService)
+            IAccountService accountService)
             : base(options, logger, encoder, clock)
         {
-            _accountService = userService;
+            _accountService = accountService;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            if (!Request.Headers.ContainsKey("Authorization"))
+            if (!Request.Headers.ContainsKey("Authorization")) 
                 return AuthenticateResult.Fail("Missing Authorization Header");
 
-           Account account = null;
+            Account account = null;
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
@@ -58,6 +58,23 @@ namespace WebApi.Helpers
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
             return AuthenticateResult.Success(ticket);
+        }
+        /// <summary>
+        /// Override this method to deal with 401 challenge concerns, if an authentication scheme in question
+        /// deals an authentication interaction as part of it's request flow. (like adding a response header, or
+        /// changing the 401 result to 302 of a login page or external sign-in location.)
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <returns>A Task.</returns>
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            Response.StatusCode = 401;
+            if (!Response.Headers.ContainsKey("WWW-Authenticate"))
+            {
+                Response.Headers.Add("WWW-Authenticate",
+                    string.Format("Basic realm=\"{0}\"", "localhost"));
+            }
+            return Task.CompletedTask;
         }
     }
 }

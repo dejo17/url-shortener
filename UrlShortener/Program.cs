@@ -35,6 +35,8 @@ namespace UrlShortener
                 {
                     var context = services.GetRequiredService<UrlShortenerContext>();
                     context.Database.EnsureCreated();
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError("Database created.");
                 }
                 catch (Exception ex)
                 {
