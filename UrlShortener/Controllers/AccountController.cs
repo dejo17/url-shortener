@@ -41,7 +41,7 @@ namespace UrlShortener.Controllers
                 AccountResponseBody accountResponse = new AccountResponseBody(); //priprema responsea za popuniti
 
                 //trazimo da li account postoji da bi znali koji response poslati
-                Account account = _accountService.GetAccount(accountModel.AccountId).Result;                   
+                Account account = _accountService.GetAccount(accountModel.AccountId);                   
 
                 if (account != null)
                 {
@@ -53,7 +53,7 @@ namespace UrlShortener.Controllers
                 else
                 {
                     //account ne postoji, kreiramo novi
-                    Account newAccount = _accountService.CreateAccount(accountModel.AccountId).Result;
+                    Account newAccount = _accountService.CreateAccount(accountModel.AccountId);
                     //popunjavamo response i vracamo status created:
                     accountResponse.success = true;
                     accountResponse.description = "Account created successfully";

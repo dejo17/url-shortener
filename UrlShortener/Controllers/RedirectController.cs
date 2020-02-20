@@ -11,11 +11,9 @@ namespace UrlShortener.Controllers
     public class RedirectController : ControllerBase
     {
         private readonly IShortenerService _urlService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public RedirectController(IShortenerService urlService, IHttpContextAccessor httpContextAccessor)
+        public RedirectController(IShortenerService urlService)
         {
             _urlService = urlService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("{ShortUrl}")]

@@ -21,21 +21,22 @@ namespace UrlShortener.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
         [HttpPost]
-        public ActionResult<RegisterUrlResponseBody> registerUrlAsync([FromBody]RegisterUrlRequestBody request) {
+        public ActionResult<RegisterUrlResponseBody> RegisterUrl([FromBody]RegisterUrlRequestBody request) {
 
             var account = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if (account == null)
+            {
+                return Unauthorized();
+            }
 
             if (!ModelState.IsValid) 
             {
                 return BadRequest();
             }
-            if (account == null) {
-                return Unauthorized();
-            }
-
+      
             RegisteredUrl registeredUrl = _urlService.CreateRegisteredUrl(request, account);
-            RegisterUrlResponseBody response = new RegisterUrlResponseBody();
-            response.shortUrl = registeredUrl.ShortUrl;            
+            RegisterUrlResponseBody response = new RegisterUrlResponseBody() { shortUrl = registeredUrl.ShortUrl};       
             return Ok(response);
         
         }

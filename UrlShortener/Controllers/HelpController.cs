@@ -16,7 +16,7 @@ namespace UrlShortener.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult getHelp() {
+        public ActionResult GetHelp() {
         {
             var file = Path.Combine(Directory.GetCurrentDirectory(),
                                     "wwwroot" , "help.html");

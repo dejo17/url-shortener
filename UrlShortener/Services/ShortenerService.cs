@@ -42,9 +42,7 @@ namespace UrlShortener.Services
             }
             else
             {
-                RegisteredUrl registeredUrl = new RegisteredUrl();
-                registeredUrl.LongUrl = request.url;
-                registeredUrl.ShortUrl = ShortUrlGenerator.Generate(10);
+                RegisteredUrl registeredUrl = new RegisteredUrl() { LongUrl = request.url , ShortUrl = ShortUrlGenerator.Generate(10), AccountID = account };
                 if (request.redirectType > 0)
                 {
                     registeredUrl.RedirectType = request.redirectType;
@@ -53,7 +51,6 @@ namespace UrlShortener.Services
                 {
                     registeredUrl.RedirectType = 302;
                 }
-                registeredUrl.AccountID = account;
                 _context.RegisteredUrls.Add(registeredUrl);
                 _context.SaveChanges();
                 return registeredUrl;

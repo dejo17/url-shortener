@@ -32,7 +32,7 @@ namespace UrlShortener.Authentication
             if (!Request.Headers.ContainsKey("Authorization")) 
                 return AuthenticateResult.Fail("Missing Authorization Header");
 
-            Account account = null;
+            Account account;
             try
             {
                 var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
@@ -40,7 +40,7 @@ namespace UrlShortener.Authentication
                 var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
                 var username = credentials[0];
                 var password = credentials[1];
-                account = await _accountService.Authenticate(username, password);
+                account = _accountService.Authenticate(username, password);
             }
             catch
             {
@@ -76,5 +76,7 @@ namespace UrlShortener.Authentication
             }
             return Task.CompletedTask;
         }
+
+
     }
 }

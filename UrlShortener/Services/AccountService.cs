@@ -8,9 +8,9 @@ namespace UrlShortener.Services
 {
 
     public interface IAccountService {
-        Task<Account> Authenticate(string username, string password);
-        Task<Account> GetAccount(string AccountID);
-        Task<Account> CreateAccount(string AccountID);
+       Account Authenticate(string username, string password);
+        Account GetAccount(string AccountID);
+       Account CreateAccount(string AccountID);
     }
     public class AccountService : IAccountService
     {
@@ -21,10 +21,10 @@ namespace UrlShortener.Services
         }
 
 
-        public async Task<Account> Authenticate(string AccountID, string password)
+        public Account Authenticate(string AccountID, string password)
         {
             //Console.WriteLine("About to authenticate account");
-            Account accountToAuthenticate = await _context.Accounts.FindAsync(AccountID);
+            Account accountToAuthenticate = _context.Accounts.Find(AccountID);
             if (accountToAuthenticate == null)
             {
                 //Console.WriteLine("Account not found");
@@ -40,10 +40,10 @@ namespace UrlShortener.Services
         /**
          * 
          */
-        public async Task<Account> GetAccount(string AccountID)
+        public Account GetAccount(string AccountID)
         {
             //Console.WriteLine($"Searching for AccountID {AccountID}");
-            Account accountFound = await _context.Accounts.FindAsync(AccountID);
+            Account accountFound = _context.Accounts.Find(AccountID);
             if (accountFound == null)
             {
                 //Console.WriteLine("Account not found");
@@ -56,9 +56,9 @@ namespace UrlShortener.Services
                 return accountFound;
             }
         }
-        public async Task<Account> CreateAccount(string AccountID) {
+        public Account CreateAccount(string AccountID) {
 
-            Account account = await GetAccount(AccountID);
+            Account account = GetAccount(AccountID);
             if (account != null)
             {
                 //account vec postoji, vracamo ga
@@ -66,11 +66,14 @@ namespace UrlShortener.Services
             }
             else {
                 //account ne postoji, kreiramo novi i spremamo u bazu:
-                Account newAccount = new Account();
-                newAccount.AccountID = AccountID;
-                newAccount.Password = Password.Generate(8, 0);    //TODO make random password generator
+                Account newAccount = new Account()
+                {
+                    AccountID = AccountID,
+                    Password = Password.Generate(8, 0)
+                };   //TODO make random password generator};
+
                 _context.Accounts.Add(newAccount);
-                int z = _context.SaveChanges();
+                _context.SaveChanges();
                 return newAccount;
             }
         }
