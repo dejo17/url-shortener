@@ -20,4 +20,8 @@
     <ProjectReference Include="..\UrlShortener\UrlShortener.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
