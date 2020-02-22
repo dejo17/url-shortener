@@ -33,12 +33,11 @@ namespace UrlShortener.Controllers
         [AllowAnonymous]
         public ActionResult<AccountResponseBody> GetAccount([FromBody]AccountRequestBody accountModel)
         {
+            AccountResponseBody accountResponse = new AccountResponseBody(); //priprema responsea za popuniti
             //standardni nacin provjere da li su model binding 
             //i model validation prosli ok
             if (ModelState.IsValid) 
             {
-
-                AccountResponseBody accountResponse = new AccountResponseBody(); //priprema responsea za popuniti
 
                 //trazimo da li account postoji da bi znali koji response poslati
                 Account account = _accountService.GetAccount(accountModel.AccountId);                   
@@ -63,8 +62,7 @@ namespace UrlShortener.Controllers
             }
             else
             {
-                Console.WriteLine("Model is not valid");
-                return BadRequest();
+                return BadRequest(accountResponse);
             }
         }
     }
