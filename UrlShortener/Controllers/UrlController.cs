@@ -48,6 +48,11 @@ namespace UrlShortener.Controllers
         
         }
 
+        /**
+         *  metoda vraća sve URLove korisnika AccounID, te koliko je puta svaki od njih pozvan
+         *  AcountID path varijabla treba biti ista kao username iz Authorization headera,
+         *  inače vraćamo Unauthorized
+         */
         [HttpGet("/statistic/{AccountID}")]
         public ActionResult<Dictionary<string, string>> GetStatistics(string AccountID)
         {

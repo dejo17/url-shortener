@@ -10,32 +10,31 @@ namespace UrlShortener.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")] //placeholder se automatski zamjenjuje sa imenom controllera bez suffixa,
-                            //u ovom slucaju: /account. moguce je koristiti i custom path
-    public class AccountController : ControllerBase //controlleri nasljeduju od bazne klase ControllerBase
+    [Route("[controller]")] 
+    public class AccountController : ControllerBase 
     {
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService)   //constructor, DI ubacuje DB context
+        public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
         /**
-         * Metoda se poziva kada imamo POST request na path /account
-         * Prima AccountId kao JSON property.
+         * Metoda se poziva kada imamo POST request na URI /account
+         * Prima AccountId kao JSON property. Minimalan broj charactera je 5, maksimalan 50.
          * Provjerava u bazi da li postoji taj AccountId.
-         *  -Ako da: vraca HTTP status conflict i JSON sa propertyima: success=false i error description
-         *  -Ako ne: vraca HTTP status created i JSON sa propertyima: success=true, description message
-         *   i random generirani password od 8 znakova
+         *  - Ako da: vraca HTTP status conflict i JSON sa propertyima: success=false i error description
+         *  - Ako ne: vraca HTTP status created i JSON sa propertyima: success=true, description message
+         *    i random generirani password od 8 znakova
          */
         [HttpPost]
         [AllowAnonymous]
         public ActionResult<AccountResponseBody> GetAccount([FromBody]AccountRequestBody accountModel)
         {
             AccountResponseBody accountResponse = new AccountResponseBody(); //priprema responsea za popuniti
-            //standardni nacin provjere da li su model binding 
-            //i model validation prosli ok
+            
+            //standardni nacin provjere da li su model binding i model validation prosli ok
             if (ModelState.IsValid) 
             {
 

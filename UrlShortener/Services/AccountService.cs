@@ -20,19 +20,20 @@ namespace UrlShortener.Services
             _context = context;
         }
 
-
+        /**
+         *  metoda autentificira korisnika
+         *  vraca null ako korisnik ne postoji
+         *  vraca Account objekt ako je autentifikaicja prosla OK
+         */
         public Account Authenticate(string AccountID, string password)
         {
-            //Console.WriteLine("About to authenticate account");
             Account accountToAuthenticate = _context.Accounts.Find(AccountID);
             if (accountToAuthenticate == null)
             {
-                //Console.WriteLine("Account not found");
                 return null; //varacamo null ako account ne postoji
             }
             else {
-                //ako je user pronaden, provjeravamo password
-                //Console.WriteLine("Account found, checking password");
+                //ako je user pronaden, provjeravamo password i vracamo Account objekt
                 return (accountToAuthenticate.Password.Equals(password, StringComparison.Ordinal)) ? accountToAuthenticate : null;
             }
         }
@@ -42,17 +43,14 @@ namespace UrlShortener.Services
          */
         public Account GetAccount(string AccountID)
         {
-            //Console.WriteLine($"Searching for AccountID {AccountID}");
             Account accountFound = _context.Accounts.Find(AccountID);
             if (accountFound == null)
             {
-                //Console.WriteLine("Account not found");
                 return null; //varacamo null ako account ne postoji
             }
             else
             {
-                //ako je user pronaden, provjeravamo password
-                //Console.WriteLine("Account found");
+                //user pronaden, vracamo Account objekt
                 return accountFound;
             }
         }
@@ -70,7 +68,7 @@ namespace UrlShortener.Services
                 {
                     AccountID = AccountID,
                     Password = Password.Generate(8, 0)
-                };   //TODO make random password generator};
+                };
 
                 _context.Accounts.Add(newAccount);
                 _context.SaveChanges();

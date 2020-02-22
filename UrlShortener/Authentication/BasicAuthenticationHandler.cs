@@ -59,13 +59,10 @@ namespace UrlShortener.Authentication
 
             return AuthenticateResult.Success(ticket);
         }
-        /// <summary>
-        /// Override this method to deal with 401 challenge concerns, if an authentication scheme in question
-        /// deals an authentication interaction as part of it's request flow. (like adding a response header, or
-        /// changing the 401 result to 302 of a login page or external sign-in location.)
-        /// </summary>
-        /// <param name="properties"></param>
-        /// <returns>A Task.</returns>
+
+        /**
+         * Ako header nije Authorization: Basic, vracamo WWW-Authenticate header da bi clientu dali do znanja kakav authentication je potreban
+         */      
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             Response.StatusCode = 401;

@@ -51,7 +51,7 @@ namespace UrlShortener
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                    .UseUrls("http://*:6500"); // <-----
+                    .UseUrls("http://*:6500");
                 });
     }
 }
