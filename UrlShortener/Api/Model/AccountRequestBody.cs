@@ -10,10 +10,6 @@ namespace UrlShortener
         [MinLength(5)]
         public string AccountId { get; set; }
 
-        /*
-         * Equals and GetHashCode su overridane metode (ctrl + . za automatsko generiranje) koje moraju
-         * biti tu zbog usporedivanja objekata jednog s drugim, npr kada koristimo List.Contains
-         */
         public override bool Equals(object obj)
         {
             return obj is AccountRequestBody account &&

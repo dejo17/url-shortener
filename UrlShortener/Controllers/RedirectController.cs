@@ -11,13 +11,16 @@ namespace UrlShortener.Controllers
     public class RedirectController : ControllerBase
     {
         private readonly IShortenerService _urlService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public RedirectController(IShortenerService urlService, IHttpContextAccessor httpContextAccessor)
+        public RedirectController(IShortenerService urlService)
         {
             _urlService = urlService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
+        /**
+         *  Metoda prima skraćeni url string i preusmjerava korisnika na duži string koji vadi iz baze. 
+         *  Ovisno o tome koji redirectType je spremljen u bazi, preusmjeravamo sa 301 ili 302 statusom.
+         *  Ako je redirect uspješan, uvećavamo statistiku za taj URL
+         */
         [HttpGet("{ShortUrl}")]
         [AllowAnonymous]
         public ActionResult RedirectToUrl(string ShortUrl)
@@ -42,14 +45,6 @@ namespace UrlShortener.Controllers
                 return Redirect(RegisteredUrl.LongUrl); //za svaki slucaj ako je redirectType = null ili 0
             }
             return NotFound();
-
-            /*if (!Response.Headers.ContainsKey("WWW-Authenticate"))
-            {
-                Response.Headers.Add("WWW-Authenticate",
-                    string.Format("Basic realm=\"{0}\"", "localhost"));
-            }
-            return Unauthorized();*/
-
         }   
     }
 }

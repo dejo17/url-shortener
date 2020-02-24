@@ -11,6 +11,5 @@ namespace UrlShortener
         public bool success { get; set; }
         public string description { get; set; }
         public string password { get; set; }
-
     }
 }

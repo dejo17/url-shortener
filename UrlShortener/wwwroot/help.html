@@ -3,10 +3,366 @@
 <head>
     <meta charset="utf-8" />
     <title>Welcome to URL shortener</title>
-    <link href="./css/help.css" rel="stylesheet">
+    <link href="css/semantic.css" type="text/css" rel="stylesheet">
 </head>
 
 <body>
-    Help text ide ovdje
+
+    <div class="ui text container">
+        <br />
+
+        <h2 class="ui orange big header">Infobip</h2>
+        <br />
+        <h1 class="ui header center aligned orange big">URL shortener - rješenje zadatka</h1>
+        <br />
+        <h3 class="ui header"> <i class="list icon"></i>Summary</h3>
+
+        <p>
+            Servis koristimo za skraćivanje URL-ova da bi ih lakše pamtili i dijelili.
+            Nakon uspješne registracije URL-a, dobivamo kraći URL za korištenje.
+            Kada mu pristupimo kroz web browser, servis nas preusmjerava na originalni URL.
+        </p>
+        <div class="ui divider"></div>
+
+        <h3 class="ui header"> <i class="settings icon"></i>Instalacija i pokretanje</h3>
+
+        <p>
+            Svi potrebni fileovi su sadržani u zip paketu. Potrebno je raspakirati zip lokalno na testnom računalu.
+            Servis se pokreće duplim klikom na UrlShortener.exe file.
+            <br />Postoji mogućnost da će firewall onemogućiti UrlShortener da koristi mrežu dok to eksplicitno ne dozvolimo.
+            Dozvolu dajemo kroz pop-up prozor koji će se pojaviti.
+        </p>
+
+        <div class="ui divider"></div>
+
+        <h3 class="ui header"> <i class="info icon"></i>Kratke upute za korištenje</h3>
+
+        <p>
+            Servis se konfigurira kroz REST API. Konfiguracijski dio se može testirati pomoću programa kao što je Postman, Curl ili slično.<br />
+            Skraćene URL-ove možemo testirati kroz bilo koji web browser.
+        </p>
+        <div class="ui info message">
+            <p>
+                Svi zahtjevi prema servisu trebaju koristiti HTTP protokol. Unatoč tome što se osjetljivi podaci prenose putem HTTP headera,
+                odabrao sam ovo rješenje da se izbjegne postavljanje SSL certifikata na testnom računalu.
+            </p>
+        </div>
+
+        <br />Pojednostavljeno, koraci za korištenje su sljedeći:
+
+
+        <ol class="ui ordered list">
+            <li>Pokrenuti servis klikom na exe file</li>
+            <li>Ukoliko ne postoji korisnički račun, potrebno je kreirati novog korisnika putem REST zahtjeva</li>
+            <li>Registriracija URL-ova se također radi putem REST zahtjeva, a dozvoljava se samo korisnicima sa već kreiranim korisničkim računom.</li>
+            <li>Nakon uspješne registracije URL-a servis vraća skraćeni URL</li>
+            <li>Skraćenom URL-u može pristupiti bilo tko koristeći web browser</li>
+            <li>
+                Svaki posjet se uvodi u statistiku. Statistika se poziva putem REST zahtjeva za svaki korisnički račun posebno
+                (zahtjev treba biti autentificiran)
+            </li>
+            <li>Statistika sadrži sve registrirane URL-ove tog korisnika i broj posjeta na svaki URL</li>
+        </ol>
+
+        <div class="ui info message">
+            <p>Koristi se embedded baza podataka. Podaci nisu trajni, nego ostaju u bazi samo dok aplikacija radi.</p>
+        </div>
+        <br />
+        <div class="ui divider"></div>
+
+        <h3 class="ui header"><i class="user icon"></i>Kreiranje korisnika</h3>
+
+        <p> Svi REST zahtjevi koji se tiču registracije korisničkog računa ne zahtjevaju HTTP Authorization header.</p>
+        <table class="ui celled table">
+            <tr>
+                <td>HTTP metoda</td>
+                <td>POST</td>
+            </tr>
+            <tr>
+                <td>URI</td>
+                <td>http://localhost:6500/account</td>
+            </tr>
+            <tr>
+                <td>Request type</td>
+                <td>application/json</td>
+            </tr>
+            <tr>
+                <td>Request body</td>
+                <td>
+                    JSON objekt sa slijedećim parametrima:
+                    <br />• AccountId (String, obavezan, minimalno 5, maksimalno 50 charactera)<br />
+                    <br />Primjer: { "AccountId" : "12345"}
+                </td>
+            </tr>
+            <tr>
+                <td>Response type</td>
+                <td>application/json</td>
+            </tr>
+            <tr>
+                <td>Response</td>
+                <td>
+                    JSON objekt sa slijedećim parametrima:
+                    <br />• success: true | false
+                    <br />• description: opis rezultata
+                    <br />• password: generirani password duljine 8 znakova ako je account uspješno registriran<br />
+                </td>
+            </tr>
+            <tr>
+        </table>
+
+        <h3>Primjeri</h3>
+        <table class="ui celled table">
+            <tr>
+                <td>
+                    Uspješna registracija<br />(HTTP status 201 Created)
+                </td>
+                <td>
+                    <code>
+                        <br /> {
+                        <br /> success: true
+                        <br /> description: "Account created successfully"
+                        <br /> password: "fjZr3)-2"
+                        <br /> } <br />
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Neuspješna registracija<br /> (HTTP status 409 Conflict)
+                </td>
+                <td>
+                    <code>
+                        <br /> {
+                        <br /> success: false
+                        <br /> description: "Account exists"
+                        <br /> password: null
+                        <br /> } <br />
+
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Neuspješni zahtjev<br />(HTTP status 400 BadRequest)
+                </td>
+                <td>
+                    <code>
+                        <br /> {
+                        <br /> type: "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                        <br />title: "One or more validation errors occurred.",
+                        <br />status: 400,
+                        <br />traceId: "|2d96f246-40f15d03bb2218bf.",
+                        <br />errors: {
+                        <br />AccountId: ["The AccountId field is required."] }
+                        <br /> } <br />
+                    </code>
+                </td>
+            </tr>
+        </table>
+
+        <br />
+        <div class="ui divider"></div>
+
+        <h3 class="ui header"><i class="linkify icon"></i>Registriranje URL-a</h3>
+
+        <p>
+            Svi REST zahtjevi koji se tiču registracije URL-ova trebaju sadržavati Authorization header koji treba izgledati ovako: <br /><br />
+            Authorization : Basic nekiUsernamePasswordBase64encodedString
+            <br />
+            <br />
+            Prema HTTP standardu authorization string mora biti Base64 encoded.
+
+            Ako testiramo pomoću programa Postman potrebno je ručno postaviti Authorization header.
+            Nakon što kreiramo korisnika i dobijemo password potrebno je složiti string
+            u formatu accountID:password i encodati ga u Base64, npr. pomoću web stranice https://www.base64encode.org/.
+            <br />
+
+            <h5>Primjer:</h5>
+
+        <p>Authorization: Basic MTg0MTM5OTU1NTk5OjBDcE1PJVY7</p>
+        <br />
+        URL registriramo prema sljedećim parametrima:
+        <table class="ui celled table">
+            <tr>
+                <td>HTTP metoda</td>
+                <td>POST</td>
+            </tr>
+            <tr>
+                <td>URI</td>
+                <td>http://localhost:6500/register</td>
+            </tr>
+            <tr>
+                <td>Request type</td>
+                <td>application/json</td>
+            </tr>
+            <tr>
+                <td>Request header</td>
+                <td>
+                    String u formatu accountId:password, encodiran u Base64 kao u primjeru:
+                    <br /><br /> Authorization: Basic MTg0MTM5OTU1NTk5OjBDcE1PJVY7
+                </td>
+            </tr>
+            <tr>
+                <td>Request body</td>
+                <td>
+                    JSON objekt sa sljedećim parametrima:
+                    <br />• url (obavezan, u pravilnom url formatu, maximalno 500 charactera)<br /> - url koji treba skratiti
+                    <br />• redirectType : 301 | 302 (nije obavezan)
+                    <br />
+                    <br />Primjer: {
+                    url: 'http://stackoverflow.com/questions/1567929/ <br />website-safe-data-access-architecture-question?rq=1',
+                    <br />redirectType : 301
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Response type</td>
+                <td>application/json</td>
+            </tr>
+            <tr>
+                <td>Response</td>
+                <td>
+                    JSON objekt sa slijedećim parametrima:
+                    <br /> • shortUrl (skraćeni URL)
+                </td>
+            </tr>
+            <tr>
+        </table>
+
+        <h3>Primjeri</h3>
+        <table class="ui celled table">
+            <tr>
+                <td>
+                    Uspješna registracija<br />(HTTP status 201 Created)
+                </td>
+                <td>
+                    <code>
+                        <br /> {"shortUrl": "http://localhost:6500/mdhxzmVVxP"}
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Neuspješni zahtjev<br />(HTTP status 400 BadRequest)
+                </td>
+                <td>
+                    <code>
+                        <br /> {
+                        <br /> type: "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+                        <br />title: "One or more validation errors occurred.",
+                        <br />status: 400,
+                        <br />traceId: "|ef8b14f7-463f8ae34970e355.",
+                        <br />errors: {
+                        <br /> ["The url field is not a valid fully-qualified http, https, or ftp URL."]}
+                        <br /> } <br />
+                    </code>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div class="ui divider"></div>
+
+        <h3 class="ui header"><i class="chart line icon"></i>Dohvat statistike</h3>
+
+        <p>
+            Kao i kod registracije URL-a, svi REST zahtjevi koji se tiču dohvata statistike trebaju sadržavati Authorization header.
+            Servis će odgovoriti sa podacima samo ako je username iz Authorization headera isti kao AccounID path varijabla.
+            <br />
+            <br />
+            Header treba popuniti kako je već opisano u poglavlju Registracija URL-a.
+            <br />
+
+            <h5>Primjer:</h5>
+
+        <p>Authorization: Basic MTg0MTM5OTU1NTk5OjBDcE1PJVY7</p>
+        <div class="ui info message">
+            <p>
+                Nakon uspješnog redirecta, u nekim slučajevima web browser će stranicu spremiti u cache memoriju.
+                U tim slučajevima statistika neće odražavati stvarni broj posjeta jer browser ne šalje zahtjev prema servisu, nego stranicu učitava iz memorije.
+            </p>
+        </div>
+
+        Statistiku dohvaćamo prema sljedećim parametrima:
+        <table class="ui celled table">
+            <tr>
+                <td>HTTP metoda</td>
+                <td>GET</td>
+            </tr>
+            <tr>
+                <td>URI</td>
+                <td>http://localhost:6500/statistic/{AccountId}</td>
+            </tr>
+            <tr>
+                <td>Request header</td>
+                <td>
+                    String u formatu accountId:password, encodiran u Base64 kao u primjeru:
+                    <br /><br /> Authorization: Basic MTg0MTM5OTU1NTk5OjBDcE1PJVY7
+                </td>
+            </tr>
+            <tr>
+                <td>Response type</td>
+                <td>application/json</td>
+            </tr>
+            <tr>
+                <td>Response</td>
+                <td>
+                    Server odgovara sa JSON objektom, odnosno mapom ključ:vrijednost gdje je ključ registrirani URL,
+                    a vrijednost broj pozivanja istog. <br /><br />Primjer:<br />
+                    {
+                    'http://mojweb.com/nekijakodugackiurl/pajosnekidirektorij/: 10,
+                    'http://mojweb.com/nekijakodugackiurl2/pajosnekidirektorij2/: 4,
+                    'http://mojweb.com/nekijakodugackiurl3/pajosnekidirektorij3/: 91,
+                    }
+                </td>
+            </tr>
+            <tr>
+        </table>
+
+        <h3>Primjeri</h3>
+        <table class="ui celled table">
+            <tr>
+                <td>
+                    Uspješan dohvat<br />(HTTP status 200 Ok)
+                </td>
+                <td>
+                    <code>
+                        <br /> {
+                        <br />"https://www.google.com": 3,
+                        <br />"https://www.9gag.com": 5,
+                        <br />"https://www.coinmarketcap.com": 5,
+                        <br /> } <br />
+                    </code>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Neuspješni zahtjev<br />(HTTP status 401 Unauthorized)
+                </td>
+                <td>
+                    <code>
+                        Content type: text/plain
+                        <br /> <br />AccountID's from Authorization header <br /> and URI path dont match. You are only allowed to see your own statistic
+                    </code>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div class="ui divider"></div>
+
+        <h3 class="ui header"><i class="angle double right icon"></i>Korištenje servisa</h3>
+
+        <p>
+            Nakon što uspješno generiramo skraćeni URL posjetiti ga može bilo tko koristeći web browser. Ovisno o načinu na koji je
+            URL registriran, servis će preusmjeriti zahtjev na konfigurirani URL sa HTTP statusom 301 ili 302. Ako prilikom registracije nismo naveli
+            redirectType zahtjev će biti preusmjeren sa 302 HTTP statusom.
+        </p>
+        <div class="ui info message">
+            <p>
+                Skraćene URL-ove možemo koristiti samo dok servis radi zbog embedded baze podataka koja ne sprema podatke trajno.
+            </p>
+        </div>
+        <br />
+        <br />
+    </div>
 </body>
 </html>

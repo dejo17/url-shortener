@@ -25,8 +25,8 @@ namespace UrlShortener
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<UrlShortenerContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("UrlShortenerContext")));
-            //options.UseInMemoryDatabase("UrlShortenerContext"));
+            //options.UseSqlServer(Configuration.GetConnectionString("UrlShortenerContext")));
+            options.UseInMemoryDatabase("UrlShortenerContext"));
 
             // configure basic authentication 
             services.AddAuthentication("BasicAuthentication")
@@ -52,7 +52,6 @@ namespace UrlShortener
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseMiddleware<BasicAuthMiddleware>("test"); //TODO refactor string
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
